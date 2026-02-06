@@ -1,370 +1,455 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<title>Cotización de Viaje | Infreserve Panamá</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
-<script charset="UTF-8" src="https://me.kes.v2.scr.kaspersky-labs.com/7EA5E9BB-55E1-4C31-9C21-4943DDFED2E4/main.js?attr=95NRcFDXpgBbFOl5EKgbX0QoiNHI1j34RyowFWgJX88DunpGhdVXvEZMu9nQtU8aM7J0_gtnXW3qriS2-R6ikrNGcAQdSDnmvPvUnVGzOO6LtLzP8ZxNX0kp_GyAv1Rc3ZtgA_r8XIAdRBniwlp2I7puRS8_KsjawUE65uVJo7aQ4e77CHRydBZdSgbuFOvv5es1Os2QY91JjErNU41t4A" type="text/javascript"></script>
-<style>
-  :root{
-    --primary: #003366;
-    --secondary: #0077cc;
-    --bg-card: #ffffff;
-    --bg-page: #f4f6f8;
-    --border: #dde3e9;
-    --hover: #e9f5ff;
-  }
-  body{
-    font-family: 'Roboto', sans-serif;
-    background: var(--bg-page);
-    margin: 0;
-    padding: 0;
-    color: #222;
-  }
-  header{
-    background: var(--primary);
-    color: #fff;
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    box-shadow: 0 2px 6px rgba(0,0,0,.15);
-  }
-  header img{height: 60px}
-  .company-title{font-size: 1.3rem;font-weight: 700;margin-bottom: 4px}
-  .company-services{font-size: .9rem;opacity: .9}
-  .company-address{font-size: .8rem;opacity: .8;margin-top: 6px}
-  .container{
-    max-width: 840px;
-    margin: 40px auto;
-    background: var(--bg-card);
-    padding: 32px 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,.08);
-  }
-  h1{color: var(--primary);margin-bottom: 24px;font-weight: 700;font-size: 1.6rem}
-  label{display:block;margin-top: 20px;font-weight: 500;color: #333}
-  input,select{
-    width: 100%;
-    padding: 10px 12px;
-    margin-top: 6px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 1rem;
-  }
-  button{
-    padding: 12px 24px;
-    background: var(--secondary);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: background .2s;
-  }
-  button:hover{background: #005fa3}
-  button:disabled{background: #6c757d;cursor: not-allowed}
-  #map{height: 360px;margin-top: 24px;border-radius: 8px}
-  .result{margin-top: 32px;background: var(--hover);padding: 24px;border-radius: 8px;border-left: 6px solid var(--secondary)}
-  #loading{display:none;text-align:center;margin-top: 20px;font-weight: 500;color: var(--secondary)}
-  .ida-vuelta-info{font-size: .8rem;color: #555;margin-top: 6px}
-  .soft-line{
-    border: none;
-    height: 1px;
-    background: var(--secondary);
-    opacity: .35;
-    margin: 24px 0;
-  }
-  table.viaticos{width: 100%;margin-top: 8px;font-size: .9rem;border-collapse: collapse}
-  table.viaticos th,table.viaticos td{padding: 8px 4px;text-align: center;border: 1px solid var(--border)}
-  table.viaticos tfoot td{border-top: 2px solid var(--secondary);font-weight: 700}
-  .autocomplete{position:relative}
-  .autocomplete-items{position:absolute;border:1px solid var(--border);border-bottom:none;border-top:none;z-index:99;top:100%;left:0;right:0;max-height:200px;overflow-y:auto}
-  .autocomplete-items div{padding:10px;cursor:pointer;background:#fff;border-bottom:1px solid var(--border)}
-  .autocomplete-items div:hover{background: var(--hover)}
-  .autocomplete-active{background: var(--secondary)!important;color:#fff}
-  .carga-grid{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-top: 8px;
-  }
-  .carga-grid label{
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    font-weight: 400;
-    cursor: pointer;
-  }
-  .carga-grid input[type="checkbox"]{
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    accent-color: var(--secondary);
-  }
-  .carga-final-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 8px;
-    text-align: center;
-  }
-  .carga-final-row label {
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  .carga-final-row select {
-    width: auto;
-    min-width: 100px;
-  }
-  .numero-cotizacion-box {
-    margin-left: auto;
-    margin-right: 0;
-    margin-bottom: 10px;
-    width: fit-content;
-    background: var(--secondary);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-decoration: underline;
-    box-shadow: 0 2px 6px rgba(0,0,0,.2);
-  }
-  .botones-finales {
-    margin-top: 28px;
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .btn-imprimir {
-    background: #6c757d;
-  }
-  .btn-guardar {
-    background: #28a745;
-  }
-  .cal-popup{
-    display:none;
-    position:absolute;
-    background:#fff;
-    border:1px solid var(--border);
-    border-radius:6px;
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-    padding:8px;
-    z-index:999;
-  }
-  .cal-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-  }
-  .cal-days{
-    display:grid;
-    grid-template-columns:repeat(7,32px);
-    gap:4px;
-  }
-  .cal-days button{
-    width:32px;
-    height:32px;
-    border:1px solid var(--border);
-    background:#fff;
-    cursor:pointer;
-    font-size:.9rem;
-    color:#222;
-  }
-  .cal-days button:hover{background:var(--hover);}
-  .fecha-grupo {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .fecha-grupo input {
-    flex: 1;
-    cursor: pointer;
-  }
-  .fecha-grupo button {
-    flex-shrink: 0;
-    background: var(--secondary);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 12px;
-    cursor: pointer;
-  }
-</style>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <title>Cotizador de Viajes - IFS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    :root{--primary:#0077cc;--secondary:#6c757d;--border:#ccc;--hover:#f5f5f5;--bg:#ffffff;--text:#222;}
+    .modo-oscuro{--bg:#121212;--text:#e0e0e0;--hover:#1e1e1e;--border:#444;}
+    body{margin:0;font-family:Roboto,sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s;}
+    header{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 20px;border-bottom:2px solid var(--border);background:var(--bg);}
+    header img{height:86px}.company-title{font-weight:700;font-size:1.15rem;margin-bottom:4px}
+    .company-services{font-size:.75rem;color:var(--secondary);margin-bottom:6px}
+    .company-address{font-size:.7rem;line-height:1.3}.container{padding:20px;max-width:980px;margin:auto}
+    .numero-cotizacion-box{background:var(--primary);color:#fff;padding:6px 12px;border-radius:4px;font-weight:700;font-size:.9rem;display:inline-block;margin-bottom:10px;}
+    h1{font-size:1.4rem;margin:0 0 12px;color:var(--primary)}label{font-weight:500;font-size:.85rem;margin-top:12px;display:block}
+    input,select,textarea{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:.85rem;background:var(--bg);color:var(--text);}
+    .carga-final-row{display:flex;gap:10px;align-items:flex-end}.carga-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:.8rem;}
+    .fecha-grupo{display:flex;gap:6px}.fecha-grupo input{flex:1}
+    .fecha-grupo button{padding:4px 8px;font-size:1rem;border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:4px;cursor:pointer;}
+    .destino-item{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+    .destino-item input{flex:1}
+    .tiempo-despacho{width:60px;margin-left:6px;font-size:.75rem;padding:4px;}
+    .btn{padding:8px 14px;border:none;border-radius:4px;font-size:.85rem;cursor:pointer;background:var(--primary);color:#fff;}.btn:hover{opacity:.9}
+    .btn-imprimir{background:var(--secondary)}.btn-guardar{background:#28a745}.btn-nueva{background:#ffc107;color:#212529}.btn-whatsapp{background:#25D366;color:#fff}.btn-rojo{background:#dc3545;color:#fff;font-size:.7rem;padding:4px 8px}
+    .botones-finales{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}#loading{display:none;font-size:.9rem;margin:10px 0}
+    #map{height:380px;border:1px solid var(--border);border-radius:6px;margin-top:10px;position:relative}.result{margin-top:14px;font-size:.9rem;line-height:1.4}
+    .historial-box{margin-top:30px}.historial-box h2{margin:0 0 8px;font-size:1rem;color:var(--primary)}
+    .input-filtro{margin-bottom:8px;max-width:260px;font-size:.75rem;padding:4px}
+    table{width:100%;border-collapse:collapse;font-size:.75rem;background:var(--bg);color:var(--text);}th,td{border:1px solid var(--border);padding:4px;text-align:left}th{background:var(--hover)}
+    .btn-eliminar{background:#dc3545;font-size:.6rem;padding:2px 3px;color:#fff;border:none;border-radius:3px;cursor:pointer}
+    .toast-ajuste{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 18px;border-radius:6px;font-size:.85rem;z-index:9999;opacity:0;transition:opacity .4s;}.toast-ajuste.show{opacity:1}
+    .switch{position:relative;display:inline-block;width:44px;height:24px;margin-left:auto;}.switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.4s;border-radius:24px;}.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;transition:.4s;border-radius:50%;}
+    input:checked+.slider{background:var(--primary)}input:checked+.slider:before{transform:translateX(20px)}
+    #progressBar{display:none;width:100%;background:#ccc;margin-top:10px;border-radius:3px;overflow:hidden;}#progress{height:6px;background:var(--primary);width:0%;transition:width .3s;}
+    .leaflet-popup-content-wrapper{border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.25);}.leaflet-popup-content{margin:10px 12px;font-size:.8rem;line-height:1.3;}
+    .popup-origen .leaflet-popup-content-wrapper{border:2px solid #2e7d32;border-radius:8px;box-shadow:0 2px 10px rgba(46,125,50,.25);background:#fff;}
+    .popup-destino .leaflet-popup-content-wrapper{border:2px solid #003366;border-radius:8px;box-shadow:0 2px 10px rgba(0,51,102,.25);background:#fff;}
+    .popup-origen .leaflet-popup-content strong{color:#2e7d32!important;font-size:1.1rem}.popup-destino .leaflet-popup-content strong{color:#003366!important;font-size:1.1rem}
+    .cal-popup{display:none;position:absolute;background:var(--bg);border:1px solid var(--border);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.15);padding:6px;z-index:999;}
+    .cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:.75rem;}
+    .cal-days{display:grid;grid-template-columns:repeat(7,24px);gap:2px;}.cal-days button{width:24px;height:24px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:.65rem;}.cal-days button:hover{background:var(--hover)}
+    .autocomplete{position:relative}.autocomplete-items{position:absolute;border:1px solid var(--border);border-top:none;z-index:99;top:100%;left:0;right:0;background:var(--bg);max-height:180px;overflow-y:auto;}
+    .autocomplete-items div{padding:6px 8px;cursor:pointer;font-size:.8rem;border-bottom:1px solid var(--border);}.autocomplete-items div:hover{background:var(--hover)}.autocomplete-active{background:#0077cc!important;color:#fff;}
+    @media print{body{background:#fff;color:#000}header,.botones-finales,.historial-box,#map,#progressBar{display:none}}
+    .campo-invalido{border: 1px solid #dc3545 !important;background-color: #fff5f5 !important;}
+    .botones-finales button,.btn,.btn-imprimir,.btn-guardar,.btn-whatsapp,.btn-nueva,.btn-rojo{border:none;border-radius:6px;padding:10px 16px;font-size:.9rem;font-weight:500;color:#fff;cursor:pointer;transition:filter .2s ease;min-width:140px;flex:1 1 auto;text-align:center;box-shadow:none;}
+    .botones-finales button:hover,.btn:hover,.btn-imprimir:hover,.btn-guardar:hover,.btn-whatsapp:hover,.btn-nueva:hover,.btn-rojo:hover{filter:brightness(.9);}
+    .botones-finales button::before{content:none;}.btn-calcular{background:#003f7f!important;color:#fff!important;}
+    .casilla-porcentaje{display:inline-block;padding:6px 12px;border:1px solid #ccc;border-radius:6px;background:#f5f5f5;font-weight:bold;font-size:.9rem;color:#222;min-width:80px;text-align:center;transition:background .3s,color .3s;}
+    .casilla-porcentaje.bajo{background:#28a745;color:#fff;border-color:#1e7e34;}
+    .casilla-porcentaje.medio{background:#ffc107;color:#212529;border-color:#e0a800;}
+    .casilla-porcentaje.alto{background:#dc3545;color:#fff;border-color:#bd2130;}
+    #veloPersWrapper input{border:1px solid var(--border);border-radius:4px;padding:6px 8px;font-size:.85rem;background:var(--bg);color:var(--text);width:90px;}
+  </style>
+  <base target="_blank">
+<base target="_blank">
 </head>
 <body>
+
 <header>
-<img alt="Logo Infreserve" src="https://internationalfreightserv711.sharepoint.com/sites/transporte/Documentos%20compartidos/Cotizador/logo-infreserve.png"/>
-<div>
-<div class="company-title">International Freight Services (Panamá) Inc.</div>
-<div class="company-services">Servicios: Logística, Aduana, Transporte, Almacén, Distribución, Representación</div>
-<div class="company-address">
-  Parque Industrial Costa del Este – 1ª Avenida – 4to Edificio Nº111<br/>
-  Costa del Este, Corregimiento de Parque Lefevre<br/>
-  P.O. Box 0831-02557, Panamá, Rep. de Panamá<br/>
-  Tel: (+507) 271-6300  |  Fax: (+507) 271-5622
-</div>
-</div>
+  <img alt="Logo Infreserve" src="https://internationalfreightserv711.sharepoint.com/sites/transporte/Documentos%20compartidos/Cotizador/logo-infreserve.png" style="height:86px;">
+  <div>
+    <div class="company-title">International Freight Services (Panamá) Inc.</div>
+    <div class="company-services">Servicios: Logística, Aduana, Transporte, Almacén, Distribución, Representación</div>
+    <div class="company-address">Parque Industrial Costa del Este – 1ª Avenida – 4to Edificio Nº111<br>Costa del Este, Corregimiento de Parque Lefevre<br>P.O. Box 0831-02557, Panamá, Rep. de Panamá<br>Tel: (+507) 271-6300 | Fax: (+507) 271-5622</div>
+  </div>
+  <label class="switch" title="Modo oscuro"><input type="checkbox" id="toggleModoOscuro" onchange="toggleModoOscuro()"><span class="slider"></span></label>
 </header>
+
 <div class="container">
-<div class="numero-cotizacion-box" id="numeroCotizacion">COT-20250618-TRA-1000</div>
-<h1>Cotización de Viaje</h1>
-<label>Tipo de carga a Transportar</label>
-<div class="carga-grid">
-<label><input name="carga" type="checkbox" value="import"/> Import</label>
-<label><input name="carga" type="checkbox" value="export"/> Export</label>
-<label><input name="carga" type="checkbox" value="aereo"/> Aéreo</label>
-<label><input name="carga" type="checkbox" value="transporte-local"/> Transporte Local</label>
-<label><input name="carga" type="checkbox" value="carga-suelta"/> Carga Suelta</label>
-<label><input name="carga" type="checkbox" value="consolidada"/> Consolidada</label>
-<label><input name="carga" type="checkbox" value="contenedor"/> Contenedor</label>
+  <div class="numero-cotizacion-box" id="numeroCotizacion">COT-20250618-TRA-1000</div>
+  <h1>Cotización de Viaje - Múltiples Destinos</h1>
+
+  <label><span style='font-size: 200%; color: #003366; font-weight: bold;'>Tipo de carga a Transportar</span></label>
+  <div class="carga-grid">
+    <label><input name="carga" type="checkbox" value="import"> Import</label>
+    <label><input name="carga" type="checkbox" value="export"> Export</label>
+    <label><input name="carga" type="checkbox" value="aereo"> Aéreo</label>
+    <label><input name="carga" type="checkbox" value="transporte-local"> Transporte Local</label>
+    <label><input name="carga" type="checkbox" value="carga-suelta"> Carga Suelta</label>
+    <label><input name="carga" type="checkbox" value="consolidada"> Consolidada</label>
+    <label><input name="carga" type="checkbox" value="contenedor"> Contenedor</label>
+  </div>
+
+  <div class="carga-final-row">
+    <label for="codigoArea">Código de Área</label>
+    <select id="codigoArea" onchange="actualizarNumeroCotizacion()">
+      <option value="">-- Seleccione --</option>
+      <option value="OPL">OPL</option>
+      <option value="TR">TR</option>
+      <option value="COM">COM</option>
+      <option value="GCIA">GCIA</option>
+      <option selected value="TRA">TRA</option>
+    </select>
+  </div>
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+  <label for="nombreCliente"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Nombre del cliente</span></label>
+  <input id="nombreCliente" placeholder="Empresa o persona a cotizar" type="text">
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 180px;">
+      <label>Fecha de creación</label>
+      <div class="fecha-grupo">
+        <input class="fecha-cal" id="fechaCreacion" readonly type="text" value="05/11/2025">
+        <button onclick="mostrarCalendario(document.getElementById('fechaCreacion'))" type="button">📅</button>
+      </div>
+    </div>
+    <div style="flex: 1; min-width: 180px;">
+      <label>Fecha de expiración</label>
+      <div class="fecha-grupo">
+        <input class="fecha-cal" id="fechaExpiracion" readonly type="text" value="05/12/2025">
+        <button onclick="mostrarCalendario(document.getElementById('fechaExpiracion'))" type="button">📅</button>
+      </div>
+    </div>
+  </div>
+
+  <label for="start"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Punto de inicio</span></label>
+  <div class="autocomplete"><input id="start" placeholder="Ej. Panamá, Panamá" type="text"></div>
+
+  <label><span style='font-size: 200%; color: #003366; font-weight: bold;'>Destinos (entregas)</span></label>
+  <div id="destinosContainer">
+    <div class="destino-item">
+      <span class="num-entrega">Entrega</span>
+      <input class="destino-input" placeholder="Ej. David, Chiriquí" type="text">
+      <input type="number" class="tiempo-despacho" min="5" step="5" value="15" title="Tiempo de despacho (min)" style="width: 60px; padding: 4px;">
+      <button onclick="moverDestino(this,'arriba')" title="Subir" type="button">↑</button>
+      <button onclick="moverDestino(this,'abajo')" title="Bajar" type="button">↓</button>
+      <button onclick="eliminarDestino(this)" type="button">🗑️</button>
+    </div>
+  </div>
+  <button onclick="agregarDestino()" type="button">+ Agregar destino</button>
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+  <label for="vehiculo"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Tipo de vehículo</span></label>
+  <div style="display:flex;gap:8px;align-items:center">
+    <select id="vehiculo" onchange="actualizarVelocidadVehiculo(); calcularPorcentajeCarga();">
+      <option value="MOTO">🛵 Moto</option>
+      <option value="AUTO">🚗 Auto</option>
+      <option value="PANEL">🚐 Panel</option>
+      <option value="PKUP">🛻 Pick-Up</option>
+      <option value="CF14">🚛 Camión F-14</option>
+      <option value="CF16">🚛 Camión F-16</option>
+      <option value="CF26">🚛 Camión F-26</option>
+      <option value="CF20">🚛 Camión C-20</option>
+      <option value="MC24">🚜🚛 Mula 20/40</option>
+      <option value="MSXT">🚜🚛 Mula XT sobre dimensión</option>
+      <option value="MS40">🚜🚛 Mula con mesa</option>
+      <option value="CB60">🚜🚛 Mula cama baja 60 T</option>
+      <option value="CPLT">🚛 Camión Platform</option>
+      <option value="GRBK">🚛🔄 Camión Grúa Roll</option>
+      <option value="GALT">🏗️ Grúa Boom Altec</option>
+      <option value="GPFG">🏗️ Grúa Palfinger</option>
+    </select>
+    <span id="iconoVehiculo" style="font-size:1.4rem;"></span>
+  </div>
+
+  <label style="margin-top:4px;font-size:.8rem;color:var(--secondary);">
+    Velocidad promedio: <span id="velocidadTexto" style="font-weight:bold;">29 km/h</span> |
+    Peso útil: <span id="pesoVehiculoTexto" style="font-weight:bold;">25 kg</span> |
+    Volumen: <span id="volumenVehiculoTexto" style="font-weight:bold;">0.04 m³</span>
+  </label>
+
+  <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+    <div>
+      <label style="font-size:.8rem;">Peso de la carga (kg)</label>
+      <input id="pesoCarga" type="number" min="0" step="1" value="0" style="width:110px;" oninput="calcularPorcentajeCarga()">
+    </div>
+    <div>
+      <label style="font-size:.8rem;">Volumen de la carga (m³)</label>
+      <input id="volumenCarga" type="number" min="0" step="0.01" value="0" style="width:110px;" oninput="calcularPorcentajeCarga()">
+    </div>
+    <div>
+      <label style="font-size:.8rem;">% Peso / % Volumen</label>
+      <div id="porcentajeCargaTexto" class="casilla-porcentaje">– / –</div>
+    </div>
+    <div id="veloPersWrapper" style="display:none;">
+      <label style="font-size:.8rem;">Velocidad (km/h)</label>
+      <input id="velocidadPersonal" type="number" min="5" max="120" value="30" step="5"
+             style="width:90px;" oninput="if(!document.getElementById('checkVeloPers').checked)return; autoRecalcular();">
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;margin-top:10px;font-size:.85rem;flex-wrap:wrap;">
+    <div id="toggleVelocidadWrapper" style="display:flex;align-items:center;gap:6px;">
+      <button id="btnToggleVelocidad" type="button" onclick="toggleVelocidadPersonalizada()" style="background:#ccc;color:#222;border:none;border-radius:20px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:background .3s,color .3s;">
+        🚦 Velocidad manual: OFF
+      </button>
+    </div>
+  </div>
+  <input id="checkVeloPers" type="checkbox" style="display:none;">
+
+  <label for="precioCombustible">Precio del combustible (USD por litro)</label>
+  <input id="precioCombustible" min="0" step="0.01" type="number" value="0.85">
+
+  <label><span style='font-size: 200%; color: #003366; font-weight: bold;'>Viáticos y pernocta (marque lo que corresponda)</span></label>
+  <table class="viaticos">
+    <thead>
+      <tr>
+        <th>Concepto</th>
+        <th>¿Aplica?</th>
+        <th>Cantidad</th>
+        <th>USD/u</th>
+        <th>Sub-total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Desayuno</td>
+        <td><input id="chkDesayuno" onchange="calcViaticos()" type="checkbox"></td>
+        <td><input id="qtyDesayuno" min="0" oninput="calcViaticos()" style="width:40px" type="number" value="1"></td>
+        <td>5.00</td>
+        <td id="subDesayuno">0.00</td>
+      </tr>
+      <tr>
+        <td>Almuerzo</td>
+        <td><input id="chkAlmuerzo" onchange="calcViaticos()" type="checkbox"></td>
+        <td><input id="qtyAlmuerzo" min="0" oninput="calcViaticos()" style="width:40px" type="number" value="1"></td>
+        <td>8.00</td>
+        <td id="subAlmuerzo">0.00</td>
+      </tr>
+      <tr>
+        <td>Cena</td>
+        <td><input id="chkCena" onchange="calcViaticos()" type="checkbox"></td>
+        <td><input id="qtyCena" min="0" oninput="calcViaticos()" style="width:40px" type="number" value="1"></td>
+        <td>7.00</td>
+        <td id="subCena">0.00</td>
+      </tr>
+      <tr>
+        <td>Hotel noche</td>
+        <td><input id="chkHotel" onchange="calcViaticos()" type="checkbox"></td>
+        <td><input id="qtyHotel" min="0" oninput="calcViaticos()" style="width:40px" type="number" value="1"></td>
+        <td>45.00</td>
+        <td id="subHotel">0.00</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4">TOTAL VIÁTICOS + HOSPEDAJE</td>
+        <td id="totalViaticos">0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <input id="viaticos" type="hidden" value="0">
+  <input id="hospedaje" type="hidden" value="0">
+  <label for="horasExtras"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Horas extras (h)</span></label>
+  <input id="horasExtras" step="0.1" type="number" value="0">
+  <label for="tiempoCargaDescarga"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Tiempo de carga/descarga (h)</span></label>
+  <input id="tiempoCargaDescarga" step="0.01" type="number" value="1.12">
+
+  <div style="display:flex;align-items:center;gap:10px;margin-top:10px;font-size:.85rem;">
+    <button id="btnTogglePeaje" type="button" onclick="toggleEvitarPeaje()" style="background:#28a745;color:#fff;border:none;border-radius:20px;padding:6px 14px;font-size:.8rem;cursor:pointer;transition:background .3s;">
+      🛣️ Sin peajes: ON
+    </button>
+  </div>
+  <input id="evitarPeajes" type="checkbox" checked style="display:none;">
+
+  <label for="peajes"><span style='font-size: 200%; color: #003366; font-weight: bold;'>Costo de peajes (USD)</span></label>
+  <input id="peajes" type="number" value="0">
+  <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+  <label for="observaciones">Observaciones o notas</label>
+  <textarea id="observaciones" rows="3" style="width:100%;font-size:.85rem;margin-top:6px;" placeholder="Ej: Entregar solo en horario de oficina"></textarea>
+
+  <input id="tarifaHoraConductor" type="hidden" value="15.00">
+  <div class="botones-finales">
+    <button class="btn-calcular" onclick="calcularRuta()">Calcular Cotización</button>
+    <button class="btn-imprimir" onclick="imprimirCotizacion()">Imprimir Cotización</button>
+    <button class="btn-guardar" onclick="guardarCotizacionLocal()">Guardar en historial</button>
+    <button class="btn-whatsapp" onclick="enviarWhatsAppCustom()">📲 Enviar personalizado</button>
+    <button class="btn-whatsapp" onclick="copiarMensajeCustom()">📋 Copiar personalizado</button>
+    <button class="btn-nueva" onclick="nuevaCotizacion()">Nueva cotización</button>
+  </div>
+
+  <div id="customMsgBox" style="display:none;margin-top:15px;">
+    <label for="customWhatsAppText" style="font-size:.9rem;">Personaliza el mensaje:</label>
+    <textarea id="customWhatsAppText" rows="5" style="width:100%;font-size:.85rem;margin-top:6px;"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn-whatsapp" onclick="enviarWhatsAppCustom()">📲 Enviar personalizado</button>
+      <button class="btn-whatsapp" onclick="copiarMensajeCustom()">📋 Copiar personalizado</button>
+    </div>
+  </div>
+
+  <div id="loading">Calculando ruta, por favor espere...</div>
+  <div id="progressBar">
+    <div id="progress"></div>
+  </div>
+
+  <div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-size:.85rem;flex-wrap:wrap;">
+    <label for="mapStyle" style="font-weight:500;">🗺️ Estilo de mapa</label>
+    <select id="mapStyle" onchange="cambiarEstiloMapa()" style="padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:.8rem;background:var(--bg);color:var(--text);">
+      <option value="osm" selected>OpenStreetMap</option>
+      <option value="cartoLight">CartoDB Light</option>
+      <option value="cartoDark">CartoDB Dark</option>
+      <option value="esriSat">Esri Satélite</option>
+      <option value="esriStreet">Esri Calles</option>
+      <option value="stadiaSmooth">Stadia Smooth</option>
+      <option value="stadiaDark">Stadia Smooth Dark</option>
+      <option value="topo">OpenTopoMap</option>
+    </select>
+  </div>
+  <div id="map"></div>
+  <div class="result" id="resultado"></div>
+
+  <button class="btn-mapa" onclick="map.zoomIn()" title="Acercar">＋</button>
+  <button class="btn-mapa" onclick="map.zoomOut()" style="top:116px;" title="Alejar">−</button>
+
+  <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+    <button onclick="centrarEnOrigen()">📍 Centrar en origen</button>
+    <button onclick="centrarEnDestinos()">📍 Centrar en destinos</button>
+    <button onclick="mostrarDistancias()">📏 Mostrar distancias</button>
+  </div>
+
+  <!-- ✅ CAMPO MONTO DEL TRANSPORTE (MANUAL) -->
+  <div class="seccion" id="seccionMontoTransporte" style="display:none;">
+    <h3>Monto del transporte</h3>
+    <div style="display:inline-block; border:2px solid #003366; background:#fff; padding:6px 10px; font-family:'Courier New',monospace;">
+      <div style="color:#000; font-size:11pt;">MONTO DEL TRANSPORTE: <strong>US$<span id="montoTransporte">0.00</span></strong></div>
+    </div>
+    <label for="inputMontoTransporte" style="margin-top:8px; font-size:0.85rem;">Ingresar monto manualmente (USD):</label>
+    <input id="inputMontoTransporte" type="number" step="0.01" value="0.00" style="width:140px;" oninput="actualizarMontoTransporte()">
+  </div>
+
+  <div class="historial-box">
+    <h2>Historial local de cotizaciones</h2>
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+      <input class="input-filtro" id="filtroGeneral" onkeyup="filtrarHistorial()" placeholder="Buscar por cliente, vehículo, fecha o tipo de carga..." type="text">
+      <button onclick="exportarExcel()">Exportar a Excel</button>
+      <button onclick="preguntarJSON('descargar')">Descargar JSON</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+      <button class="btn-rojo" onclick="preguntarJSON('restaurar')">Restaurar JSON</button>
+      <button class="btn-rojo" onclick="limpiarHistorial()">Limpiar historial</button>
+    </div>
+    <table id="tablaHistorial">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Número</th>
+          <th>Cliente</th>
+          <th>Origen</th>
+          <th>Secuencia</th>
+          <th>Vehículo</th>
+          <th>Tipo carga</th>
+          <th>Dist km</th>
+          <th>Tiempo min</th>
+          <th>T. Despacho min</th>
+          <th>Via+Hot $</th>
+          <th>Comb $</th>
+          <th>Personal (cond) $</th>
+          <th>Peaje $</th>
+          <th>Base $</th>
+          <th>+25% $</th>
+          <th>+35% $</th>
+          <th>+40% $</th>
+          <th>Observaciones</th>
+          <th>Peso (kg)</th>
+          <th>Vol (m³)</th>
+          <th>% Peso / Vol</th>
+          <th>Monto Transp.</th>
+          <th>Acc</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
-<div class="carga-final-row">
-<label for="codigoArea">Código de Área</label>
-<select id="codigoArea" onchange="actualizarNumeroCotizacion()">
-<option value="">-- Seleccione --</option>
-<option value="OPL">OPL</option>
-<option value="TR">TR</option>
-<option value="COM">COM</option>
-<option value="GCIA">GCIA</option>
-<option selected="" value="TRA">TRA</option>
-</select>
-</div>
-<hr class="soft-line"/>
-<label for="nombreCliente">Nombre del cliente</label>
-<input id="nombreCliente" placeholder="Empresa o persona a cotizar" type="text"/>
-<label>Fecha de creación</label>
-<div class="fecha-grupo">
-<input class="fecha-cal" id="fechaCreacion" readonly="" type="text" value="05/11/2025"/>
-<button onclick="mostrarCalendario(document.getElementById('fechaCreacion'))" type="button">📅</button>
-</div>
-<label>Fecha de expiración</label>
-<div class="fecha-grupo">
-<input class="fecha-cal" id="fechaExpiracion" readonly="" type="text" value="05/12/2025"/>
-<button onclick="mostrarCalendario(document.getElementById('fechaExpiracion'))" type="button">📅</button>
-</div>
-<label for="start">Punto de inicio</label>
-<div class="autocomplete"><input id="start" placeholder="Ej. Panamá, Panamá" type="text"/></div>
-<label for="end">Punto de destino</label>
-<div class="autocomplete"><input id="end" placeholder="Ej. David, Chiriquí" type="text"/></div>
-<hr class="soft-line"/>
-<label for="vehiculo">Tipo de vehículo</label>
-<select id="vehiculo">
-<option value="MOTO">Moto</option>
-<option value="AUTO">Auto</option>
-<option value="PANEL">Panel</option>
-<option value="PKUP">Pick-Up</option>
-<option value="CF14">Camión F-14</option>
-<option value="CF16">Camión F-16</option>
-<option value="CF26">Camión F-26</option>
-<option value="CF20">Camión C-20</option>
-<option value="MC24">Mula 20/40</option>
-<option value="MSXT">Mula XT sobre dimensión</option>
-<option value="MS40">Mula con mesa</option>
-<option value="CB60">Mula cama baja 60 T</option>
-<option value="CPLT">Camión Platform</option>
-<option value="GRBK">Camión Grúa Roll</option>
-<option value="GALT">Grúa Boom Altec</option>
-<option value="GPFG">Grúa Palfinger</option>
-</select>
-<label for="precioCombustible">Precio del combustible (USD por litro)</label>
-<input id="precioCombustible" min="0" step="0.01" type="number" value="0.85"/>
-<label>Viáticos y pernocta (marque lo que corresponda)</label>
-<table class="viaticos">
-<thead><tr><th>Concepto</th><th>¿Aplica?</th><th>Cantidad</th><th>USD/u</th><th>Sub-total</th></tr></thead>
-<tbody>
-<tr><td>Desayuno</td><td><input id="chkDesayuno" onchange="calcViaticos()" type="checkbox"/></td><td><input id="qtyDesayuno" min="0" oninput="calcViaticos()" style="width:50px" type="number" value="1"/></td><td>5.00</td><td id="subDesayuno">0.00</td></tr>
-<tr><td>Almuerzo</td><td><input id="chkAlmuerzo" onchange="calcViaticos()" type="checkbox"/></td><td><input id="qtyAlmuerzo" min="0" oninput="calcViaticos()" style="width:50px" type="number" value="1"/></td><td>8.00</td><td id="subAlmuerzo">0.00</td></tr>
-<tr><td>Cena</td><td><input id="chkCena" onchange="calcViaticos()" type="checkbox"/></td><td><input id="qtyCena" min="0" oninput="calcViaticos()" style="width:50px" type="number" value="1"/></td><td>7.00</td><td id="subCena">0.00</td></tr>
-<tr><td>Hotel noche</td><td><input id="chkHotel" onchange="calcViaticos()" type="checkbox"/></td><td><input id="qtyHotel" min="0" oninput="calcViaticos()" style="width:50px" type="number" value="1"/></td><td>45.00</td><td id="subHotel">0.00</td></tr>
-</tbody>
-<tfoot><tr><td colspan="4">TOTAL VIÁTICOS + HOSPEDAJE</td><td id="totalViaticos">0.00</td></tr></tfoot>
-</table>
-<input id="viaticos" type="hidden" value="0"/>
-<input id="hospedaje" type="hidden" value="0"/>
-<label for="horasExtras">Horas extras (h)</label>
-<input id="horasExtras" step="0.1" type="number" value="0"/>
-<label for="tiempoCargaDescarga">Tiempo carga/descarga (h)</label>
-<input id="tiempoCargaDescarga" step="0.01" type="number" value="1.12"/>
-<label for="peajes">Costo de peajes (USD)</label>
-<input id="peajes" type="number" value="0"/>
-<hr class="soft-line"/>
-<input id="tarifaHoraConductor" type="hidden" value="15.00"/>
-<!-- BOTONES FINALES -->
-<div class="botones-finales">
-<button onclick="calcularRuta()">Calcular Cotización</button>
-<button class="btn-imprimir" onclick="imprimirCotizacion()">Imprimir / PDF</button>
-<button class="btn-guardar" onclick="guardarCotizacion()">Guardar en historial</button>
-</div>
-<div id="loading">Calculando ruta, por favor espera...</div>
-<div id="map"></div>
-<div class="result" id="resultado"></div>
-</div>
+
 <div class="cal-popup" id="calPopup">
-<div class="cal-header">
-<button onclick="changeMonth(-1)">◀</button>
-<span id="calTitle"></span>
-<button onclick="changeMonth(1)">▶</button>
+  <div class="cal-header">
+    <button onclick="changeMonth(-1)">◀</button>
+    <span id="calTitle"></span>
+    <button onclick="changeMonth(1)">▶</button>
+  </div>
+  <div class="cal-days" id="calDays"></div>
 </div>
-<div class="cal-days" id="calDays"></div>
-</div>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<input id="uploadJSON" onchange="restaurarJSON(event)" style="display:none" type="file">
+
 <script>
-  const apiKey='eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijc3NDQ0NjQ0MGM3MzRkODlhZjU1YTRmNjAxMGM2NDVjIiwiaCI6Im11cm11cjY0In0=';
-  const rendimientos={
-    MOTO:  6.00,   AUTO:  6.25,   PANEL: 6.15,   PKUP:  5.75,   CF14:  4.50,
-    CF16:  4.08,   CF26:  3.03,   CF20:  3.13,   MC24:  2.53,   MSXT:  2.43,
-    MS40:  2.43,   CB60:  2.40,   CPLT:  2.95,   GRBK:  3.03,   GALT:  2.79,   GPFG:  2.95
+  /* ---------- CONFIG / CONST ---------- */
+  const apiKey = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjljZDU5NTUyYjI5MTcwYzBlZjViZDFkYjQxMDQ0NDc1NTRhNDAyYTEyMjg0MTAxYTRkMWJhYjA5IiwiaCI6Im11cm11cjY0In0=';
+  const rendimientos = { MOTO: 12, AUTO: 4.69, PANEL: 4.61, PKUP: 4.31, CF14: 3.38, CF16: 3.06, CF26: 2.27, CF20: 2.35, MC24: 1.9, MSXT: 1.82, MS40: 1.82, CB60: 1.8, CPLT: 2.21, GRBK: 2.27, GALT: 2.09, GPFG: 2.21 };
+  const factoresTiempo = { MOTO: 1, AUTO: 1, PANEL: 1.05, PKUP: 1.05, CF14: 1.1, CF16: 1.1, CF26: 1.15, CF20: 1.15, MC24: 1.2, MSXT: 1.25, MS40: 1.25, CB60: 1.3, CPLT: 1.1, GRBK: 1.15, GALT: 1.1, GPFG: 1.1 };
+  const factoresCarga = { import: 1, export: 1, aereo: 1.05, 'transporte-local': 1, 'carga-suelta': 1.05, consolidada: 1.05, contenedor: 1.1 };
+  const factoresDistanciaCarga = { import: 1, export: 1, aereo: 1, 'transporte-local': 1, 'carga-suelta': 1, consolidada: 1, contenedor: 1.1 };
+  const velocidadesPromedio = { MOTO: 29, AUTO: 21, PANEL: 21, PKUP: 21, CF14: 16, CF16: 16, CF26: 12, CF20: 12, MC24: 12, MSXT: 12, MS40: 12, CB60: 12, CPLT: 12, GRBK: 12, GALT: 12, GPFG: 12 };
+  const velocidadViaGrupo = {
+    moto: { motorway: 65, trunk: 55, primary: 50, secondary: 40, tertiary: 30, residential: 20, unclassified: 15, track: 15 },
+    liviano: { motorway: 65, trunk: 55, primary: 50, secondary: 40, tertiary: 30, residential: 20, unclassified: 15, track: 15 },
+    pesado: { motorway: 50, trunk: 40, primary: 30, secondary: 20, tertiary: 15, residential: 15, unclassified: 15, track: 15 },
+    mula: { motorway: 45, trunk: 40, primary: 30, secondary: 20, tertiary: 20, residential: 20, unclassified: 15, track: 15 }
+  };
+  const pesoYVolumen = {
+    MOTO: { peso: 25.00, cbm: 0.04 }, AUTO: { peso: 120.00, cbm: 0.64 }, PANEL: { peso: 920.00, cbm: 4.69 }, PKUP: { peso: 880.00, cbm: 3.17 },
+    CF14: { peso: 2980.00, cbm: 18.22 }, CF16: { peso: 3720.00, cbm: 25.56 }, CF26: { peso: 5980.00, cbm: 46.27 }, CF20: { peso: 18000.00, cbm: 34.18 },
+    MC24: { peso: 30000.00, cbm: 68.94 }, MSXT: { peso: 54450.00, cbm: 81.49 }, MS40: { peso: 30000.00, cbm: 81.49 }, CB60: { peso: 54450.00, cbm: 142.90 },
+    CPLT: { peso: 10000.00, cbm: 34.05 }, GRBK: { peso: 14000.00, cbm: 34.05 }, GALT: { peso: 14000.00, cbm: 34.05 }, GPFG: { peso: 14000.00, cbm: 34.05 }
   };
 
-  let map;
+  let map, markersLayer = L.layerGroup();
   let correlativo = 1000;
+  let ultimaCotizacion = {};
+  let metrosAjusteRegistro = 0;
 
-  const hoy=new Date();
-  const fechaHoy=hoy.toISOString().split('T')[0];
-  document.getElementById('fechaCreacion').value=fechaHoy;
-  const exp=new Date();
-  exp.setDate(hoy.getDate()+30);
-  document.getElementById('fechaExpiracion').value=exp.toISOString().split('T')[0];
+  /* ---------- FECHAS ---------- */
+  const hoy = new Date();
+  const fechaHoy = hoy.toISOString().split('T')[0];
+  document.getElementById('fechaCreacion').value = fechaHoy;
+  const exp = new Date();
+  exp.setDate(hoy.getDate() + 30);
+  document.getElementById('fechaExpiracion').value = exp.toISOString().split('T')[0];
 
-  function actualizarNumeroCotizacion(){
+  function actualizarNumeroCotizacion() {
     const codigo = document.getElementById('codigoArea').value || 'TRA';
-    const fecha = new Date().toISOString().slice(0,10).replace(/-/g,'');
-    const numero = `COT-${fecha}-${codigo}-${correlativo}`;
-    document.getElementById('numeroCotizacion').textContent = numero;
+    const fecha = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    document.getElementById('numeroCotizacion').textContent = `COT-${fecha}-${codigo}-${correlativo}`;
   }
   actualizarNumeroCotizacion();
 
-  const prices={desayuno:5,almuerzo:8,cena:7,hotel:45};
-  function calcViaticos(){
-    let total=0;
-    ['Desayuno','Almuerzo','Cena','Hotel'].forEach(item=>{
-      const chk=document.getElementById('chk'+item);
-      const qty=document.getElementById('qty'+item);
-      const sub=document.getElementById('sub'+item);
-      const t=chk.checked?qty.value*prices[item.toLowerCase()]:0;
-      sub.textContent=t.toFixed(2);
-      total+=t;
+  /* ---------- VIÁTICOS ---------- */
+  const prices = { desayuno: 5, almuerzo: 8, cena: 7, hotel: 45 };
+  function calcViaticos() {
+    let total = 0;
+    ['Desayuno', 'Almuerzo', 'Cena', 'Hotel'].forEach(item => {
+      const chk = document.getElementById('chk' + item);
+      const qty = document.getElementById('qty' + item);
+      const sub = document.getElementById('sub' + item);
+      const t = chk.checked ? qty.value * prices[item.toLowerCase()] : 0;
+      sub.textContent = t.toFixed(2);
+      total += t;
     });
-    document.getElementById('totalViaticos').textContent=total.toFixed(2);
-    const hotelTotal=document.getElementById('chkHotel').checked?prices.hotel*document.getElementById('qtyHotel').value:0;
-    document.getElementById('hospedaje').value=hotelTotal.toFixed(2);
-    document.getElementById('viaticos').value=(total-hotelTotal).toFixed(2);
+    document.getElementById('totalViaticos').textContent = total.toFixed(2);
+    const hotelTotal = document.getElementById('chkHotel').checked ? prices.hotel * document.getElementById('qtyHotel').value : 0;
+    document.getElementById('hospedaje').value = hotelTotal.toFixed(2);
+    document.getElementById('viaticos').value = (total - hotelTotal).toFixed(2);
   }
   calcViaticos();
 
-  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  let calTarget = null;
-  let calYear, calMonth;
-
+  /* ---------- CALENDARIO ---------- */
+  const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  let calTarget = null, calYear, calMonth;
   function mostrarCalendario(input) {
     calTarget = input;
     const fecha = input.value ? new Date(input.value.split('/').reverse().join('-')) : new Date();
@@ -375,14 +460,12 @@
     const popup = document.getElementById('calPopup');
     popup.style.display = 'block';
     popup.style.left = rect.left + 'px';
-    popup.style.top  = (rect.bottom + window.scrollY + 4) + 'px';
+    popup.style.top = (rect.bottom + window.scrollY + 4) + 'px';
   }
-
   function dibujarCalendario() {
     const primerDia = new Date(calYear, calMonth, 1).getDay();
-    const diasMes   = new Date(calYear, calMonth + 1, 0).getDate();
-    const titulo    = `${meses[calMonth]} ${calYear}`;
-    document.getElementById('calTitle').textContent = titulo;
+    const diasMes = new Date(calYear, calMonth + 1, 0).getDate();
+    document.getElementById('calTitle').textContent = `${meses[calMonth]} ${calYear}`;
     const cont = document.getElementById('calDays');
     cont.innerHTML = '';
     for (let i = 0; i < primerDia; i++) cont.appendChild(document.createElement('span'));
@@ -393,35 +476,30 @@
       cont.appendChild(btn);
     }
   }
-
   function seleccionarDia(dia) {
     const fecha = new Date(calYear, calMonth, dia);
-    const dd = String(fecha.getDate()).padStart(2,'0');
-    const mm = String(fecha.getMonth()+1).padStart(2,'0');
+    const dd = String(fecha.getDate()).padStart(2, '0');
+    const mm = String(fecha.getMonth() + 1).padStart(2, '0');
     const yyyy = fecha.getFullYear();
     calTarget.value = `${dd}/${mm}/${yyyy}`;
     document.getElementById('calPopup').style.display = 'none';
   }
-
-  window.changeMonth = function (dir) {
+  window.changeMonth = dir => {
     calMonth += dir;
     if (calMonth > 11) { calMonth = 0; calYear++; }
-    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    if (calMonth < 0) { calMonth = 11; calYear--; }
     dibujarCalendario();
   };
-
   document.addEventListener('click', e => {
-    const popup = document.getElementById('calPopup');
-    if (!e.target.closest('#calPopup') && !e.target.matches('.fecha-cal, .fecha-cal + button')) popup.style.display = 'none';
+    if (!e.target.closest('#calPopup') && !e.target.matches('.fecha-cal, .fecha-cal + button'))
+      document.getElementById('calPopup').style.display = 'none';
   });
-
   document.getElementById('fechaCreacion').addEventListener('click', function () { mostrarCalendario(this); });
   document.getElementById('fechaExpiracion').addEventListener('click', function () { mostrarCalendario(this); });
 
-  /* ---------- AUTOCOMPLETADO CON DEBOUNCE ---------- */
-  function autocomplete(inp){
-    let currentFocus;
-    let debounceTimer;
+  /* ---------- AUTOCOMPLETADO ---------- */
+  function autocomplete(inp) {
+    let currentFocus, debounceTimer;
     inp.addEventListener('input', function () {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(async () => {
@@ -434,7 +512,7 @@
         list.setAttribute('class', 'autocomplete-items');
         this.parentNode.appendChild(list);
         try {
-          const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=' + encodeURIComponent(val));
+          const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&countrycodes=pa&q=' + encodeURIComponent(val));
           const data = await res.json();
           data.forEach(item => {
             const div = document.createElement('DIV');
@@ -443,6 +521,7 @@
             div.addEventListener('click', function () {
               inp.value = this.getElementsByTagName('input')[0].value;
               closeAllLists();
+              autoRecalcular();
             });
             list.appendChild(div);
           });
@@ -451,18 +530,20 @@
         }
       }, 300);
     });
-
     inp.addEventListener('keydown', function (e) {
       let x = document.getElementById(this.id + 'autocomplete-list');
       if (x) x = x.getElementsByTagName('div');
-      if (e.keyCode == 40) { currentFocus++; addActive(x); }
-      else if (e.keyCode == 38) { currentFocus--; addActive(x); }
-      else if (e.keyCode == 13) {
+      if (e.keyCode == 40) {
+        currentFocus++;
+        addActive(x);
+      } else if (e.keyCode == 38) {
+        currentFocus--;
+        addActive(x);
+      } else if (e.keyCode == 13) {
         e.preventDefault();
         if (currentFocus > -1 && x) x[currentFocus].click();
       }
     });
-
     function addActive(x) {
       if (!x) return false;
       removeActive(x);
@@ -470,179 +551,946 @@
       if (currentFocus < 0) currentFocus = x.length - 1;
       x[currentFocus].classList.add('autocomplete-active');
     }
-
     function removeActive(x) {
       for (let i = 0; i < x.length; i++) x[i].classList.remove('autocomplete-active');
     }
-
     function closeAllLists(elmnt) {
       const items = document.getElementsByClassName('autocomplete-items');
       for (let i = 0; i < items.length; i++) {
         if (elmnt != items[i] && elmnt != inp) items[i].parentNode.removeChild(items[i]);
       }
     }
+    document.addEventListener('click', function (e) {
+      closeAllLists(e.target);
+    });
+  }
+  autocomplete(document.getElementById('start'));
+  document.querySelectorAll('.destino-input').forEach(autocomplete);
 
-    document.addEventListener('click', function (e) { closeAllLists(e.target); });
+  /* ---------- DESTINOS DINÁMICOS ---------- */
+  function agregarDestino() {
+    const container = document.getElementById('destinosContainer');
+    const div = document.createElement('div');
+    div.className = 'destino-item';
+    div.innerHTML = `
+      <span class="num-entrega">Entrega</span>
+      <input type="text" class="destino-input" placeholder="Ej. David, Chiriquí">
+      <input type="number" class="tiempo-despacho" min="5" step="5" value="15" title="Tiempo de despacho (min)" style="width: 60px; padding: 4px;">
+      <button onclick="moverDestino(this,'arriba')" title="Subir" type="button">↑</button>
+      <button onclick="moverDestino(this,'abajo')" title="Bajar" type="button">↓</button>
+      <button onclick="eliminarDestino(this)" type="button">🗑️</button>
+    `;
+    container.appendChild(div);
+    autocomplete(div.querySelector('.destino-input'));
+    div.querySelector('.destino-input').addEventListener('change', autoRecalcular);
+    div.querySelector('.tiempo-despacho').addEventListener('input', autoRecalcular);
+    renumeraEntregas();
   }
 
-  autocomplete(document.getElementById('start'));
-  autocomplete(document.getElementById('end'));
+  function moverDestino(btn, dir) {
+    const item = btn.parentElement;
+    const container = document.getElementById('destinosContainer');
+    const items = [...container.querySelectorAll('.destino-item')];
+    const idx = items.indexOf(item);
+    if (dir === 'arriba' && idx > 0) {
+      container.insertBefore(item, items[idx - 1]);
+    } else if (dir === 'abajo' && idx < items.length - 1) {
+      container.insertBefore(items[idx + 1], item);
+    }
+    renumeraEntregas();
+    autoRecalcular();
+  }
 
-  /* ---------- COTIZACION ---------- */
-  async function calcularRuta(){
-    const start=document.getElementById('start').value.trim();
-    const end=document.getElementById('end').value.trim();
-    if(!start||!end){alert('Por favor ingresa ambos puntos.');return;}
+  function renumeraEntregas() {
+    const items = document.querySelectorAll('.destino-item .num-entrega');
+    items.forEach((span, i) => span.textContent = `Entrega ${i + 1}`);
+  }
 
-    document.getElementById('loading').style.display='block';
-    document.getElementById('resultado').innerHTML='';
+  function eliminarDestino(btn) {
+    btn.parentElement.remove();
+    renumeraEntregas();
+    autoRecalcular();
+  }
 
-    const geocode=async(location)=>{
-      const res=await axios.get('https://api.openrouteservice.org/geocode/search',{params:{api_key:apiKey,text:location}});
-      if(!res.data.features.length)throw new Error('Dirección no encontrada: '+location);
-      return res.data.features[0].geometry.coordinates;
-    };
+  function obtenerDestinos() {
+    return Array.from(document.querySelectorAll('.destino-input'))
+      .map(input => input.value.trim())
+      .filter(v => v !== '');
+  }
 
-    try{
-      const coordStart=await geocode(start);
-      const coordEnd=await geocode(end);
-      const route=await axios.post('https://api.openrouteservice.org/v2/directions/driving-car/geojson',
-        {coordinates:[coordStart,coordEnd]},
-        {headers:{Authorization:apiKey,'Content-Type':'application/json'}}
-      );
+  function obtenerTiemposDespacho() {
+    return Array.from(document.querySelectorAll('.tiempo-despacho'))
+      .map(input => parseInt(input.value) || 0);
+  }
 
-      const distanciaKmIda = route.data.features[0].properties.summary.distance / 1000;
-      const duracionMinIda = route.data.features[0].properties.summary.duration / 60;
+  /* ---------- CÁLCULO DE RUTA ---------- */
+  async function calcularRuta() {
+    const start = document.getElementById('start').value.trim();
+    const destinos = obtenerDestinos();
+    if (!start || destinos.length === 0) {
+      alert('Por favor ingresa origen y al menos un destino.');
+      return;
+    }
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('resultado').innerHTML = '';
+    document.getElementById('progressBar').style.display = 'block';
+    document.getElementById('progress').style.width = '0%';
+    let width = 0;
+    const interval = setInterval(() => {
+      if (width >= 100) {
+        clearInterval(interval);
+        document.getElementById('progressBar').style.display = 'none';
+      } else {
+        width += 10;
+        document.getElementById('progress').style.width = width + '%';
+      }
+    }, 200);
 
-      const distanciaTotalKm = distanciaKmIda * 2;
-      const duracionTotalMin = duracionMinIda * 2;
+    async function snapToRoad(coord) {
+      try {
+        const res = await axios.get('https://api.openrouteservice.org/v2/nearest/driving', {
+          params: { api_key: apiKey, point: coord.join(','), number: 1 }
+        });
+        return res.data.features[0].geometry.coordinates;
+      } catch (e) {
+        return coord;
+      }
+    }
+    async function geocode(location) {
+      const res = await axios.get('https://nominatim.openstreetmap.org/search', { params: { format: 'json', addressdetails: 1, limit: 1, countrycodes: 'pa', q: location } });
+      if (!res.data || !res.data.length) throw new Error('Dirección no encontrada: ' + location);
+      return [parseFloat(res.data[0].lon), parseFloat(res.data[0].lat)];
+    }
+
+    try {
+      const coordStart = await geocode(start);
+      const coordDestinos = await Promise.all(destinos.map(geocode));
+      let coords = [coordStart, ...coordDestinos];
+
+      const coordsSnapped = await Promise.all(coords.map(c => snapToRoad(c)));
+      coordsSnapped[0] = coords[0];
+
+      let metrosAjustados = 0;
+      coordsSnapped.forEach((c, i) => {
+        const d = turf.distance(coords[i], c, { units: 'meters' });
+        if (d > 15) metrosAjustados += d;
+      });
+
+      const evitarPeajes = document.getElementById('evitarPeajes').checked;
+      const body = { coordinates: coordsSnapped };
+      if (evitarPeajes) body.options = { avoid_features: ['tollways'] };
+      const route = await axios.post('https://api.openrouteservice.org/v2/directions/driving-car/geojson', body, { headers: { Authorization: apiKey, 'Content-Type': 'application/json' } });
+
+      const distanciaKm = route.data.features[0].properties.summary.distance / 1000;
+
+      if (metrosAjustados > 15) {
+        mostrarToastAjuste(Math.round(metrosAjustados));
+      }
 
       const veh = document.getElementById('vehiculo').value;
+      const tiposCargaSeleccionados = Array.from(document.querySelectorAll('input[name="carga"]:checked')).map(cb => cb.value);
+      const factorVeh = factoresTiempo[veh] || 1;
+      const factorCarga = tiposCargaSeleccionados.length ? Math.max(...tiposCargaSeleccionados.map(t => factoresCarga[t] || 1)) : 1;
+      const factorDistancia = tiposCargaSeleccionados.length ? Math.max(...tiposCargaSeleccionados.map(t => factoresDistanciaCarga[t] || 1)) : 1;
+      const distanciaAjustadaKm = distanciaKm * factorDistancia;
+
+      let tiempoMinReal;
+      if (document.getElementById('checkVeloPers').checked) {
+        const vel = parseFloat(document.getElementById('velocidadPersonal').value) || 30;
+        tiempoMinReal = (distanciaAjustadaKm / vel) * 60;
+      } else {
+        const segmentos = route.data.features[0].properties.segments;
+        let tiempoTotalHoras = 0;
+        const g = grupoDeVehiculo(veh);
+        segmentos.forEach(s => {
+          const distKm = s.distance / 1000;
+          const highway = (s.details?.way_category?.[0] || 'primary').toLowerCase();
+          const vel = velocidadViaGrupo[g][highway] || 40;
+          tiempoTotalHoras += distKm / vel;
+        });
+        tiempoMinReal = tiempoTotalHoras * 60;
+      }
+
+      const duracionAjustadaMin = tiempoMinReal * factorVeh * factorCarga;
+
       const precioUsuario = parseFloat(document.getElementById('precioCombustible').value);
-      const consumoLitros = distanciaTotalKm / rendimientos[veh];
+      const consumoLitros = distanciaAjustadaKm / rendimientos[veh];
       const costoCombustible = consumoLitros * precioUsuario;
-
-      const peajes    = parseFloat(document.getElementById('peajes').value);
-      const viaticos  = parseFloat(document.getElementById('viaticos').value);
+      const peajes = parseFloat(document.getElementById('peajes').value);
+      const viaticos = parseFloat(document.getElementById('viaticos').value);
       const hospedaje = parseFloat(document.getElementById('hospedaje').value);
-
       const tarifaHora = parseFloat(document.getElementById('tarifaHoraConductor').value);
-      const hExtras    = parseFloat(document.getElementById('horasExtras').value);
+      const hExtras = parseFloat(document.getElementById('horasExtras').value);
       const hCargaDesc = parseFloat(document.getElementById('tiempoCargaDescarga').value);
-      const costoPersonal = (duracionTotalMin / 60 + hExtras + hCargaDesc) * tarifaHora;
 
+      const tiemposDespacho = obtenerTiemposDespacho();
+      const totalMinDespacho = tiemposDespacho.reduce((a, b) => a + b, 0);
+      const costoDespacho = (totalMinDespacho / 60) * tarifaHora;
+
+      const costoPersonal = (tiempoMinReal / 60 + hExtras + hCargaDesc) * tarifaHora + costoDespacho;
       const costoBase = costoCombustible + peajes + viaticos + hospedaje + costoPersonal;
+      const precio25 = costoBase * 1.25;
+      const precio35 = costoBase * 1.35;
+      const precio40 = costoBase * 1.4;
 
-      document.getElementById('resultado').innerHTML=`
-        <p><strong>Distancia total (ida + vuelta):</strong>${distanciaTotalKm.toFixed(2)} km</p>
-        <p><strong>Duración total (ida + vuelta):</strong>${Math.round(duracionTotalMin)} minutos</p>
-        <hr class="soft-line">
+      const data = pesoYVolumen[veh] || { peso: 0, cbm: 0 };
+
+      ultimaCotizacion = {
+        distanciaTotalKm: distanciaAjustadaKm.toFixed(2),
+        duracionTotalMin: Math.round(duracionAjustadaMin),
+        tiempoMinReal: Math.round(tiempoMinReal),
+        velocidad: Math.round(distanciaAjustadaKm / (tiempoMinReal / 60)),
+        pesoVehiculo: data.peso,
+        volumenVehiculo: data.cbm,
+        costoPersonal: costoPersonal.toFixed(2),
+        viaticosHotel: (viaticos + hospedaje).toFixed(2),
+        costoCombustible: costoCombustible.toFixed(2),
+        peajes: peajes.toFixed(2),
+        costoBase: costoBase.toFixed(2),
+        precio25: precio25.toFixed(2),
+        precio35: precio35.toFixed(2),
+        precio40: precio40.toFixed(2),
+        destinos: [start, ...destinos].join(' → '),
+        coords: coordsSnapped,
+        tiemposDespacho,
+        totalMinDespacho,
+        costoDespacho: costoDespacho.toFixed(2),
+        hCargaDesc,
+        tarifaHora
+      };
+
+      metrosAjusteRegistro = Math.round(metrosAjustados);
+
+      const detalleEntregas = [start, ...destinos].map((punto, i) => `
+        📍 ${i === 0 ? `Inicio (${i + 1})` : `Entrega ${i} (${i + 1})`}: ${punto}<br>
+         Tiempo despacho: ${tiemposDespacho[i]} min
+      `).join('<br>');
+
+      document.getElementById('resultado').innerHTML = `
+        <p><strong>Distancia total del recorrido:</strong> ${ultimaCotizacion.distanciaTotalKm} km</p>
+        <p><strong>Duración total estimada (con ajustes):</strong> ${ultimaCotizacion.duracionTotalMin} minutos</p>
+        <p><strong>Peso útil del vehículo:</strong> ${ultimaCotizacion.pesoVehiculo.toLocaleString('es-ES')} kg</p>
+        <p><strong>Volumen útil del vehículo:</strong> ${ultimaCotizacion.volumenVehiculo.toLocaleString('es-ES')} m³</p>
+        <div style="margin-top:12px;background:#f9f9f9;border:1px solid #ddd;border-radius:6px;padding:10px;font-size:0.9rem;line-height:1.4;">
+          <p style="margin:0 0 6px;"><strong>Peso de la carga (kg):</strong> <span id="resPesoCarga">0</span></p>
+          <p style="margin:0 0 6px;"><strong>Volumen de la carga (m³):</strong> <span id="resVolCarga">0</span></p>
+          <p style="margin:0;"><strong>% Peso / % Volumen:</strong> <span id="resPctCarga">– / –</span></p>
+        </div>
+        <div style="background:#e6f7ff;border:1px solid #91d5ff;border-radius:6px;padding:10px;margin-top:10px;font-size:0.85rem;line-height:1.4;">
+          <strong>Secuencia de entregas:</strong><br>
+          ${detalleEntregas}
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
         <p><strong>Costos calculados:</strong></p>
-        <p>• Combustible (ida+vuelta): $${costoCombustible.toFixed(2)}</p>
-        <p>• Peajes: $${peajes.toFixed(2)}</p>
+        <p>• Combustible: $${ultimaCotizacion.costoCombustible}</p>
+        <p>• Peajes: $${ultimaCotizacion.peajes}</p>
         <p>• Viáticos: $${viaticos.toFixed(2)}</p>
         <p>• Hospedaje: $${hospedaje.toFixed(2)}</p>
-        <p>• Personal (conductor): $${costoPersonal.toFixed(2)}</p>
-        <p><strong>Costo base total:</strong>$${costoBase.toFixed(2)}</p>
-        <p><strong>Precio con margen 15%:</strong>$${(costoBase*1.15).toFixed(2)}</p>
-        <p><strong>Precio con margen 25%:</strong>$${(costoBase*1.25).toFixed(2)}</p>
-        <p><strong>Precio con margen 35%:</strong>$${(costoBase*1.35).toFixed(2)}</p>`;
-      mostrarMapa(coordStart,coordEnd,route.data);
-      /* Al recalcular reseteamos el flag de guardado */
+        <p>• Personal (conductor): $${(ultimaCotizacion.costoPersonal - parseFloat(ultimaCotizacion.costoDespacho) - (hCargaDesc * tarifaHora)).toFixed(2)}</p>
+        <p>• Tiempo de carga/descarga: $${(hCargaDesc * tarifaHora).toFixed(2)}</p>
+        <p>• Tiempo de despacho al cliente: $${ultimaCotizacion.costoDespacho}</p>
+        <p><strong>Costo base total:</strong> $${ultimaCotizacion.costoBase}</p>
+        <p><strong>Precio +25%:</strong> $${precio25.toFixed(2)} &nbsp; <strong>+35%:</strong> $${precio35.toFixed(2)} &nbsp; <strong>+40%:</strong> $${precio40.toFixed(2)}</p>`;
+
+      document.getElementById('resPesoCarga').textContent = parseFloat(document.getElementById('pesoCarga').value) || 0;
+      document.getElementById('resVolCarga').textContent = parseFloat(document.getElementById('volumenCarga').value) || 0;
+      document.getElementById('resPctCarga').textContent = document.getElementById('porcentajeCargaTexto').textContent;
+
+      mostrarMapa(coordsSnapped, route.data);
       window._cotizacionGuardada = false;
       const btn = document.querySelector('.btn-guardar');
       btn.textContent = 'Guardar en historial';
       btn.disabled = false;
-    }catch(error){
-      alert(error.message.includes('Dirección')?error.message:'Error al calcular la ruta. Verifica tu clave API.');
-    }finally{
-      document.getElementById('loading').style.display='none';
+      mostrarRecuerdoGuardar();
+      mostrarMontoTransporte();
+
+      document.getElementById('customWhatsAppText').value = generarTextoWhatsApp();
+      document.getElementById('customMsgBox').style.display = 'block';
+
+    } catch (error) {
+      alert(error.message.includes('Dirección') ? error.message : 'Error al calcular la ruta. Verifica tu clave API.');
+    } finally {
+      document.getElementById('loading').style.display = 'none';
     }
   }
 
-  function mostrarMapa(startCoord,endCoord,geojson){
-    if(!map){
-      map=L.map('map').setView([9.0,-79.5],7);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+  function mostrarMapa(coords, geojson) {
+    if (!map) {
+      map = L.map('map', { zoomControl: false }).setView([8.9824, -79.5199], 8);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
     }
-    map.eachLayer(layer=>{if(layer instanceof L.Polyline||layer instanceof L.Marker)map.removeLayer(layer);});
-    const routeLayer=L.geoJSON(geojson).addTo(map);
-    map.fitBounds(routeLayer.getBounds());
-    L.marker([startCoord[1],startCoord[0]]).addTo(map).bindPopup('Inicio').openPopup();
-    L.marker([endCoord[1],endCoord[0]]).addTo(map).bindPopup('Destino');
+    map.eachLayer(layer => { if (layer instanceof L.TileLayer) return; map.removeLayer(layer); });
+    markersLayer.clearLayers();
+
+    const colorOrigen = '#2e7d32';
+    const colorDestino = '#003366';
+
+    const iconoInicio = (num) => L.divIcon({
+      html: `<div style="background:${colorOrigen};color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;">${num}</div>`,
+      iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16], className: 'custom-number-icon'
+    });
+    const iconoEntrega = (num) => L.divIcon({
+      html: `<div style="background:${colorDestino};color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;">${num}</div>`,
+      iconSize: [28, 28], iconAnchor: [14, 14], popupAnchor: [0, -14], className: 'custom-number-icon'
+    });
+
+    const vehiculo = document.getElementById('vehiculo').value;
+    const tiposCarga = Array.from(document.querySelectorAll('input[name="carga"]:checked')).map(cb => cb.value).join(', ') || 'Ninguno';
+    const cliente = document.getElementById('nombreCliente').value || 'Sin cliente';
+    const numeroCotizacion = document.getElementById('numeroCotizacion').textContent;
+    const imgVehiculo = {
+      MOTO: 'https://cdn-icons-png.flaticon.com/512/3472/3472430.png', AUTO: 'https://cdn-icons-png.flaticon.com/512/3472/3472413.png', PANEL: 'https://cdn-icons-png.flaticon.com/512/3472/3472424.png', PKUP: 'https://cdn-icons-png.flaticon.com/512/3472/3472426.png', CF14: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', CF16: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', CF26: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', CF20: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', MC24: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', MSXT: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', MS40: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', CB60: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', CPLT: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', GRBK: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', GALT: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png', GPFG: 'https://cdn-icons-png.flaticon.com/512/3472/3472421.png'
+    }[vehiculo] || 'https://cdn-icons-png.flaticon.com/512/3472/3472413.png';
+
+    const colorRutaPorVehiculo = {
+      MOTO: '#ff9800', AUTO: '#2196f3', PANEL: '#4caf50', PKUP: '#795548', CF14: '#607d8b', CF16: '#607d8b', CF26: '#607d8b', CF20: '#607d8b', MC24: '#3f51b5', MSXT: '#3f51b5', MS40: '#3f51b5', CB60: '#3f51b5', CPLT: '#607d8b', GRBK: '#e91e63', GALT: '#ff5722', GPFG: '#ff5722'
+    };
+    const colorLinea = colorRutaPorVehiculo[vehiculo] || '#0077cc';
+
+    const routeLayer = L.geoJSON(geojson, {
+      style: { color: colorLinea, weight: 5, opacity: 0.85 }
+    }).addTo(map);
+
+    const ordenFinal = Array.from(document.querySelectorAll('.destino-item .destino-input'))
+      .map(input => input.value.trim())
+      .filter(v => v !== '');
+    const secuenciaFinal = `Entrega 1${ordenFinal.length > 1 ? ' → ' + ordenFinal.slice(1).map((_, i) => `Entrega ${i + 2}`).join(' → ') : ''}`;
+
+    coords.forEach((coord, i) => {
+      const isStart = i === 0;
+      const label = isStart ? `Inicio (${i + 1})` : `Entrega ${i} (${i + 1})`;
+      const popupClass = isStart ? 'popup-origen' : 'popup-destino';
+      const btnClass = isStart ? 'btn-popup-origen' : 'btn-popup-destino';
+      const btnTexto = isStart ? '📋 Copiar origen' : `📋 Copiar entrega ${i}`;
+
+      const popup = `
+        <div style="text-align:center;font-size:0.8rem;line-height:1.3;">
+          <img src="${imgVehiculo}" width="40" height="40" style="margin-bottom:4px;">
+          <br><strong>${label}</strong><br>
+          <small>Cliente: ${cliente}</small><br>
+          <small>Cotización: ${numeroCotizacion}</small><br>
+          <small>Vehículo: ${vehiculo}</small><br>
+          <small>Carga: ${tiposCarga}</small><br>
+          <small>Secuencia: ${secuenciaFinal}</small><br>
+          <small>Distancia total: ${ultimaCotizacion.distanciaTotalKm} km</small><br>
+          <small>Expiración: ${document.getElementById('fechaExpiracion').value}</small><br>
+          <small>Precio +25 %: <b>$${ultimaCotizacion.precio25}</b></small><br>
+          <button onclick="copiarResumen('${numeroCotizacion}','${cliente}','${vehiculo}','${tiposCarga}','${ultimaCotizacion.distanciaTotalKm}','${document.getElementById('fechaExpiracion').value}','${ultimaCotizacion.precio25}')"
+                  class="${btnClass}" style="margin-top:6px;border:none;border-radius:4px;padding:4px 8px;font-size:0.75rem;cursor:pointer;">
+            ${btnTexto}
+          </button>
+        </div>
+      `;
+
+      L.marker([coord[1], coord[0]], {
+        icon: isStart ? iconoInicio(i + 1) : iconoEntrega(i + 1)
+      })
+        .addTo(markersLayer)
+        .bindPopup(popup, { closeButton: false, className: popupClass });
+    });
+
+    markersLayer.addTo(map);
+    map.fitBounds(routeLayer.getBounds(), { padding: [20, 20] });
   }
 
-  function imprimirCotizacion() {
-    window.print();
+  /* ---------- AUTO-RECALCULO ---------- */
+  let autoRecalcularTimeout;
+  function autoRecalcular() {
+    clearTimeout(autoRecalcularTimeout);
+    autoRecalcularTimeout = setTimeout(() => {
+      const start = document.getElementById('start').value.trim();
+      const destinos = obtenerDestinos();
+      if (start && destinos.length && ultimaCotizacion.costoBase) {
+        calcularRuta();
+      }
+    }, 600);
   }
 
-  /* ---------- GUARDAR EN HISTORIAL (una sola vez por cotización) ---------- */
-  async function guardarCotizacion() {
-    if (window._cotizacionGuardada) {
-      alert('Esta cotización ya fue guardada anteriormente.');
+  document.addEventListener('input', function (e) {
+    if (e.target.classList.contains('destino-input') || e.target.classList.contains('tiempo-despacho')) {
+      autoRecalcular();
+    }
+  });
+
+  /* ---------- WHATSAPP PERSONALIZADO ---------- */
+  function enviarWhatsAppCustom() {
+    const texto = document.getElementById('customWhatsAppText').value.trim();
+    if (!texto) {
+      alert('El mensaje está vacío.');
       return;
     }
-    const totalText = document.getElementById('resultado')?.innerText.match(/\$\d+\.\d{2}/);
-    const totalUSD = totalText ? parseFloat(totalText[0].replace('$', '')) : 0;
-    if (totalUSD === 0) {
+    const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+  }
+
+  function copiarMensajeCustom() {
+    const texto = document.getElementById('customWhatsAppText').value.trim();
+    if (!texto) {
+      alert('El mensaje está vacío.');
+      return;
+    }
+    navigator.clipboard.writeText(texto).then(() => {
+      alert('Mensaje personalizado copiado ✅');
+    }).catch(err => {
+      alert('Error al copiar: ' + err);
+    });
+  }
+
+  function generarTextoWhatsApp() {
+    const cliente = document.getElementById('nombreCliente').value || 'Sin cliente';
+    const numero = document.getElementById('numeroCotizacion').textContent;
+    const origen = document.getElementById('start').value || 'Sin origen';
+    const destinos = obtenerDestinos().join(', ') || 'Sin destinos';
+    const vehiculo = document.getElementById('vehiculo').value;
+    const distancia = ultimaCotizacion.distanciaTotalKm;
+    const montoTransporte = parseFloat(document.getElementById('inputMontoTransporte').value) || 0;
+
+    return (
+      `🚛 *Cotización de Transporte* - INFRESERVE PANAMÁ\n\n` +
+      `Hola *${cliente}*,\n` +
+      `¡Gracias por elegirnos! Tu cotización *${numero}* ya está lista:\n\n` +
+      `📍 Ruta: ${origen} → ${destinos}\n` +
+      `🚛 Vehículo asignado: ${vehiculo}\n` +
+      `📏 Distancia total: ${distancia} km\n` +
+      `⏱️ Tiempo estimado: ${ultimaCotizacion.duracionTotalMin} min\n` +
+      `💰 Precio a cotizar: *$${montoTransporte.toFixed(2)}* (no incluye ITBMS)\n\n` +
+      `📅 Válida hasta: ${document.getElementById('fechaExpiracion').value}\n\n` +
+      `✅ *Beneficios de nuestro servicio:*\n• Rapidez y puntualidad garantizada\n• Seguimiento en tiempo real\n• Seguro básico de carga\n• Atención personalizada\n\n` +
+      `⏳ *Confirma tu servicio ahora y asegura disponibilidad inmediata.*\n` +
+      `Responde a este mensaje y nuestro equipo lo gestionará al instante.`
+    );
+  }
+
+  /* ---------- LOCALSTORAGE ---------- */
+  async function guardarCotizacionLocal() {
+    if (!ultimaCotizacion.costoBase) {
       alert('Primero calcula una cotización válida.');
       return;
     }
     const numero = document.getElementById('numeroCotizacion').textContent;
     const cliente = document.getElementById('nombreCliente').value || 'Sin cliente';
-    const codigo = document.getElementById('codigoArea').value || 'TRA';
-    const origen = document.getElementById('start').value || 'Sin origen';
-    const destino = document.getElementById('end').value || 'Sin destino';
     const vehiculo = document.getElementById('vehiculo').value || 'Sin vehículo';
+    const origen = document.getElementById('start').value || 'Sin origen';
+    const tiposCarga = Array.from(document.querySelectorAll('input[name="carga"]:checked')).map(cb => cb.value).join(', ') || 'Ninguno';
+    const observaciones = document.getElementById('observaciones').value.trim();
+    const montoTransporte = parseFloat(document.getElementById('inputMontoTransporte').value) || 0;
 
-    const btn = document.querySelector('.btn-guardar');
-    const textoOriginal = btn.textContent;
-    btn.textContent = 'Guardando...';
-    btn.disabled = true;
+    const ordenFinal = Array.from(document.querySelectorAll('.destino-item .destino-input'))
+      .map(input => input.value.trim())
+      .filter(v => v !== '');
+    const secuenciaFinal = [
+      `📍 Inicio (1): ${origen}`,
+      ...ordenFinal.map((punto, i) => `📍 Entrega ${i + 1} (${i + 2}): ${punto}`)
+    ].join('<br>');
 
-    const webUrl = 'https://internationalfreightserv711.sharepoint.com/sites/transporte';
-    const listUrl = webUrl + '/_api/web/lists/getbytitle(\'HistorialCotizaciones\')/items';
-    const data = {
-      __metadata: { type: 'SP.Data.HistorialCotizacionesListItem' },
-      NumeroCotizacion: numero,
-      Cliente: cliente,
-      CodigoArea: codigo,
-      FechaCotizacion: new Date().toISOString(),
-      Origen: origen,
-      Destino: destino,
-      Vehiculo: vehiculo,
-      TotalUSD: totalUSD
+    const viaticos = parseFloat(document.getElementById('viaticos').value);
+    const hospedaje = parseFloat(document.getElementById('hospedaje').value);
+
+    const registro = {
+      fecha: new Date().toLocaleString('es-ES'),
+      numero,
+      cliente,
+      origen,
+      destinos: secuenciaFinal,
+      vehiculo,
+      tipoCarga: tiposCarga,
+      distancia: ultimaCotizacion.distanciaTotalKm,
+      tiempo: ultimaCotizacion.duracionTotalMin,
+      tiempoMinReal: ultimaCotizacion.tiempoMinReal,
+      velocidad: ultimaCotizacion.velocidad,
+      pesoVehiculo: ultimaCotizacion.pesoVehiculo,
+      volumenVehiculo: ultimaCotizacion.volumenVehiculo,
+      tiempoDespacho: ultimaCotizacion.totalMinDespacho,
+      viaticos: viaticos.toFixed(2),
+      hospedaje: hospedaje.toFixed(2),
+      personal: ultimaCotizacion.costoPersonal,
+      viaticosHotel: (viaticos + hospedaje).toFixed(2),
+      combustible: ultimaCotizacion.costoCombustible,
+      peaje: ultimaCotizacion.peajes,
+      costoBase: ultimaCotizacion.costoBase,
+      precio25: ultimaCotizacion.precio25,
+      precio35: ultimaCotizacion.precio35,
+      precio40: ultimaCotizacion.precio40,
+      observaciones: observaciones,
+      secuenciaFinal: secuenciaFinal,
+      pesoCarga: document.getElementById('pesoCarga').value,
+      volumenCarga: document.getElementById('volumenCarga').value,
+      porcentajeCarga: document.getElementById('porcentajeCargaTexto').textContent,
+      montoTransporte: montoTransporte.toFixed(2)
     };
 
-    try {
-      const resp = await fetch(listUrl, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json;odata=verbose',
-          'Content-Type': 'application/json;odata=verbose'
-        },
-        body: JSON.stringify(data),
-        credentials: 'include'
-      });
+    let historial = JSON.parse(localStorage.getItem('cotizaciones') || '[]');
+    historial.push(registro);
+    localStorage.setItem('cotizaciones', JSON.stringify(historial));
+    
+    const btn = document.querySelector('.btn-guardar');
+    btn.textContent = '✅ Guardado';
+    setTimeout(() => {
+      btn.textContent = 'Guardar en historial';
+    }, 2000);
 
-      if (resp.ok) {
-        window._cotizacionGuardada = true;
-        btn.textContent = '✅ Guardado';
-        setTimeout(() => { btn.disabled = false; }, 3000);
-      } else {
-        const txt = await resp.text();
-        console.error(txt);
-        alert('⚠️ No se pudo guardar. Revisa la consola (F12).');
-        btn.textContent = textoOriginal;
-        btn.disabled = false;
+    window._cotizacionGuardada = true;
+    cargarHistorial();
+  }
+
+  function cargarHistorial(filtro = '') {
+    const historial = JSON.parse(localStorage.getItem('cotizaciones') || '[]');
+    const tbody = document.querySelector('#tablaHistorial tbody');
+    tbody.innerHTML = '';
+
+    historial.forEach((c, index) => {
+      const texto = `${c.cliente} ${c.vehiculo} ${c.fecha} ${c.tipoCarga}`.toLowerCase();
+      if (filtro && !texto.includes(filtro.toLowerCase())) return;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${c.fecha}</td>
+        <td>${c.numero}</td>
+        <td>${c.cliente}</td>
+        <td>${c.origen}</td>
+        <td>${c.destinos}</td>
+        <td>${c.vehiculo}</td>
+        <td>${c.tipoCarga}</td>
+        <td>${c.distancia}</td>
+        <td>${c.tiempo}</td>
+        <td>${c.tiempoDespacho || 0} min</td>
+        <td>$${parseFloat(c.viaticosHotel).toFixed(2)}</td>
+        <td>$${parseFloat(c.combustible).toFixed(2)}</td>
+        <td>$${parseFloat(c.personal).toFixed(2)}</td>
+        <td>$${parseFloat(c.peaje).toFixed(2)}</td>
+        <td>$${parseFloat(c.costoBase).toFixed(2)}</td>
+        <td>$${parseFloat(c.precio25).toFixed(2)}</td>
+        <td>$${parseFloat(c.precio35).toFixed(2)}</td>
+        <td>$${parseFloat(c.precio40).toFixed(2)}</td>
+        <td>${c.observaciones || ''}</td>
+        <td>${c.pesoCarga || '0'}</td>
+        <td>${c.volumenCarga || '0'}</td>
+        <td>${c.porcentajeCarga || '– / –'}</td>
+        <td>$${parseFloat(c.montoTransporte || 0).toFixed(2)}</td>
+        <td>
+          <button class="btn-eliminar" onclick="eliminarCotizacion(${index})">Eliminar</button>
+          <button onclick="cargarCotizacionDesdeHistorial(${index})">✏️ Editar</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function eliminarCotizacion(index) {
+    if (!confirm('¿Estás seguro de eliminar esta cotización?')) return;
+    const historial = JSON.parse(localStorage.getItem('cotizaciones') || '[]');
+    historial.splice(index, 1);
+    localStorage.setItem('cotizaciones', JSON.stringify(historial));
+    cargarHistorial();
+  }
+
+  function limpiarHistorial() {
+    if (!confirm('¿Estás seguro de limpiar TODO el historial?\n\nADVERTENCIA: Esta acción eliminará todos los datos guardados.\nFavor consulta al área de Tecnología antes de continuar.')) return;
+    localStorage.removeItem('cotizaciones');
+    cargarHistorial();
+  }
+
+  function filtrarHistorial() {
+    const filtro = document.getElementById('filtroGeneral').value;
+    cargarHistorial(filtro);
+  }
+
+  function descargarJSON() {
+    const historial = JSON.parse(localStorage.getItem('cotizaciones') || '[]');
+    const blob = new Blob([JSON.stringify(historial, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'cotizaciones_backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function restaurarJSON(evt) {
+    const file = evt.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (Array.isArray(data)) {
+          localStorage.setItem('cotizaciones', JSON.stringify(data));
+          alert('Historial restaurado ✅');
+          cargarHistorial();
+        } else {
+          alert('Archivo inválido');
+        }
+      } catch (err) {
+        alert('Error al leer archivo');
       }
-    } catch (err) {
-      console.error(err);
-      alert('❌ Error al guardar. Verifica la consola (F12).');
-      btn.textContent = textoOriginal;
-      btn.disabled = false;
+    };
+    reader.readAsText(file);
+  }
+
+  function preguntarJSON(accion) {
+    const msg = `¿Estás seguro de ${accion} el archivo JSON?\n\nADVERTENCIA: Esta acción puede afectar datos históricos.\nFavor consulta al área de Tecnología antes de continuar.`;
+    if (!confirm(msg)) return;
+    if (accion === 'descargar') descargarJSON();
+    if (accion === 'restaurar') document.getElementById('uploadJSON').click();
+  }
+
+  function exportarExcel() {
+    const historial = JSON.parse(localStorage.getItem('cotizaciones') || '[]');
+    if (historial.length === 0) {
+      alert('No hay cotizaciones para exportar.');
+      return;
+    }
+    const ws_data = [['Fecha', 'Número', 'Cliente', 'Origen', 'Secuencia', 'Vehículo', 'Tipo de carga', 'Distancia (km)', 'Tiempo (min)', 'Tiempo Real (min)', 'Velocidad (km/h)', 'Peso útil (kg)', 'Volumen (m³)', 'Tiempo Despacho (min)', 'Viáticos+Hotel (USD)', 'Combustible', 'Personal (cond)', 'Peaje', 'Costo Base', 'Precio 25%', 'Precio 35%', 'Precio 40%', 'Observaciones', 'Peso (kg)', 'Vol (m³)', '% Peso / Vol', 'Monto Transporte (USD)']];
+    historial.forEach(c => {
+      ws_data.push([c.fecha, c.numero, c.cliente, c.origen, c.destinos, c.vehiculo, c.tipoCarga, c.distancia, c.tiempo, c.tiempoMinReal, c.velocidad, c.pesoVehiculo, c.volumenVehiculo, c.tiempoDespacho || 0, parseFloat(c.viaticosHotel).toFixed(2), parseFloat(c.combustible).toFixed(2), parseFloat(c.personal).toFixed(2), parseFloat(c.peaje).toFixed(2), parseFloat(c.costoBase).toFixed(2), parseFloat(c.precio25).toFixed(2), parseFloat(c.precio35).toFixed(2), parseFloat(c.precio40).toFixed(2), c.observaciones || '', c.pesoCarga || '0', c.volumenCarga || '0', c.porcentajeCarga || '– / –', parseFloat(c.montoTransporte || 0).toFixed(2)]);
+    });
+    const wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(ws_data);
+    ws['!cols'] = [{ wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 12 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Cotizaciones');
+    XLSX.writeFile(wb, 'cotizaciones_historial.xlsx');
+  }
+
+  function mostrarRecuerdoGuardar() {
+    const html = `<div class="ventana-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center"><div style="background:#fff;padding:28px 36px;border-radius:10px;max-width:420px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25)"><h3 style="margin-top:0">¿Deseas guardar esta cotización?</h3><p>Recuerda pulsar <strong>“Guardar en historial”</strong> antes de cerrar o perderás los datos.</p><div style="margin-top:20px;display:flex;gap:12px;justify-content:center"><button onclick="this.closest('.ventana-modal').remove()" style="background:var(--secondary)">Entendido</button></div></div></div>`;
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    document.body.appendChild(div);
+  }
+
+  function mostrarToastAjuste(metros) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-ajuste show';
+    toast.textContent = `Ajustamos la ubicación ${metros} m a la calle más cercana.`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 400);
+    }, 3000);
+  }
+
+  function copiarResumen(cot, cli, veh, carga, dist, exp, precio) {
+    const texto = `${cot} | Cliente: ${cli} | Vehículo: ${veh} | Carga: ${carga} | Dist: ${dist} km | Exp: ${exp} | $${precio}`;
+    navigator.clipboard.writeText(texto).then(() => {
+      event.target.textContent = '✅ ¡Copiado!';
+      setTimeout(() => event.target.textContent = '📋 Copiar resumen', 1000);
+    }).catch(err => {
+      alert('No se pudo copiar: ' + err);
+    });
+  }
+
+  /* ---------- IMPRIMIR COTIZACIÓN ---------- */
+  function imprimirCotizacion() {
+    if (!ultimaCotizacion.costoBase) {
+      alert('Primero calculá una cotización válida.');
+      return;
+    }
+
+    const cliente = document.getElementById('nombreCliente').value || 'Sin cliente';
+    const origen = document.getElementById('start').value || 'Sin origen';
+    const numero = document.getElementById('numeroCotizacion').textContent;
+    const fecha = document.getElementById('fechaCreacion').value;
+    const expiracion = document.getElementById('fechaExpiracion').value;
+    const tiposCarga = Array.from(document.querySelectorAll('input[name="carga"]:checked')).map(cb => cb.value).join(', ') || 'Ninguno';
+    const observaciones = document.getElementById('observaciones').value.trim();
+    const viaticos = parseFloat(document.getElementById('viaticos').value);
+    const hospedaje = parseFloat(document.getElementById('hospedaje').value);
+    const hCargaDesc = parseFloat(document.getElementById('tiempoCargaDescarga').value);
+    const tarifaHora = parseFloat(document.getElementById('tarifaHoraConductor').value);
+    const montoTransporte = parseFloat(document.getElementById('inputMontoTransporte').value) || 0;
+
+    const detalleEntregasPrint = ultimaCotizacion.destinos.split(' → ').map((punto, i) => `
+      📍 ${i === 0 ? `Inicio (${i + 1})` : `Entrega ${i} (${i + 1})`}: ${punto}<br>
+       Tiempo despacho: ${ultimaCotizacion.tiemposDespacho[i]} min
+    `).join('<br>');
+
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Cotización ${numero}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @page { size: legal; margin: 0.6in 0.5in; }
+    body { margin: 0; font-family: 'Roboto', sans-serif; color: #000; background: #fff; }
+    .encabezado { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+    .encabezado .logo { height: 90px; }
+    .encabezado .datos-empresa { text-align: right; font-size: 0.8rem; line-height: 1.3; }
+    .encabezado .datos-empresa .titulo { font-weight: 700; font-size: 1.15rem; margin-bottom: 4px; }
+    .titulo-cotizacion { font-size: 1.5rem; font-weight: 700; color: #003366; margin-bottom: 25px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+    .columnas { display: flex; gap: 30px; }
+    .col { flex: 1; }
+    .seccion { margin-bottom: 25px; }
+    .seccion h3 { margin: 0 0 8px; font-size: 1.05rem; color: #005fa3; border-bottom: 1px solid #dde3e9; padding-bottom: 4px; }
+    table.datos { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    table.datos th, table.datos td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #eee; }
+    table.datos th { width: 40%; font-weight: 500; color: #444; }
+    .footer { margin-top: 40px; font-size: 0.75rem; color: #666; text-align: center; line-height: 1.4; }
+  </style>
+</head>
+<body onload="window.print(); window.onafterprint = function(){ window.close(); }">
+  <div class="encabezado">
+    <img src="https://internationalfreightserv711.sharepoint.com/sites/transporte/Documentos%20compartidos/Cotizador/logo-infreserve.png" class="logo" alt="Logo Infreserve">
+    <div class="datos-empresa">
+      <div class="titulo">International Freight Services (Panamá) Inc.</div>
+      <div>Parque Industrial Costa del Este – 1ª Avenida – 4to Edificio Nº111</div>
+      <div>Costa del Este, Corregimiento de Parque Lefevre</div>
+      <div>P.O. Box 0831-02557, Panamá, Rep. de Panamá</div>
+      <div>Tel: (+507) 271-6300 | Fax: (+507) 271-5622</div>
+    </div>
+  </div>
+
+  <div class="titulo-cotizacion">Cotización de Transporte - Múltiples Destinos</div>
+
+  <div class="columnas">
+    <div class="col">
+      <div class="seccion">
+        <h3>Datos Generales</h3>
+        <table class="datos">
+          <tr><th>Número</th><td>${numero}</td></tr>
+          <tr><th>Cliente</th><td>${cliente}</td></tr>
+          <tr><th>Emisión</th><td>${fecha}</td></tr>
+          <tr><th>Expiración</th><td>${expiracion}</td></tr>
+          <tr><th>Origen</th><td>${origen}</td></tr>
+          <tr><th>Secuencia</th><td>${detalleEntregasPrint}</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="col">
+      <div class="seccion">
+        <h3>Detalles del Servicio</h3>
+        <table class="datos">
+          <tr><th>Vehículo</th><td>${document.getElementById('vehiculo').value}</td></tr>
+          <tr><th>Tipo de carga</th><td>${tiposCarga}</td></tr>
+          <tr><th>Distancia total</th><td>${ultimaCotizacion.distanciaTotalKm} km</td></tr>
+          <tr><th>Duración total estimada</th><td>${ultimaCotizacion.duracionTotalMin} minutos</td></tr>
+          <tr><th>Tiempo total de despacho</th><td>${ultimaCotizacion.totalMinDespacho} minutos</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Costos y Precios</h3>
+    <div style="display:inline-block; border:2px solid #003366; background:#fff; padding:6px 10px; font-family:'Courier New',monospace;">
+      <div style="color:#000; font-size:11pt; line-height:1.3;">COSTO BASE TOTAL: US$${parseFloat(ultimaCotizacion.costoBase).toFixed(2)}</div>
+      <div style="height:4px;"></div>
+      <div style="color:#000; font-size:11pt;">PRECIO +25%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRECIO +35%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PRECIO +40%</div>
+      <div style="color:#0099cc; font-size:14pt; font-weight:bold; letter-spacing:0.5px;">US$${(ultimaCotizacion.costoBase*1.25).toFixed(2)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;US$${(ultimaCotizacion.costoBase*1.35).toFixed(2)}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;US$${(ultimaCotizacion.costoBase*1.4).toFixed(2)}</div>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Monto del transporte</h3>
+    <div style="display:inline-block; border:2px solid #003366; background:#fff; padding:6px 10px; font-family:'Courier New',monospace;">
+      <div style="color:#000; font-size:11pt;">MONTO DEL TRANSPORTE: <strong>US$${montoTransporte.toFixed(2)}</strong></div>
+    </div>
+  </div>
+
+  <div class="seccion">
+    <h3>Observaciones</h3>
+    <p style="font-size:0.85rem;line-height:1.4;">${observaciones || 'Sin observaciones.'}</p>
+  </div>
+
+  <div class="footer">
+    <p>Esta cotización es válida hasta la fecha de expiración indicada.</p>
+    <p>International Freight Services (Panamá) Inc.</p>
+  </div>
+</body>
+</html>
+  `;
+
+  const nuevaVentana = window.open('', '_blank', 'width=1000,height=800,scrollbars=yes,status=yes');
+  nuevaVentana.document.open();
+  nuevaVentana.document.write(html);
+  nuevaVentana.document.close();
+  nuevaVentana.onload = function () {
+    nuevaVentana.print();
+  };
+  }
+
+  /* ---------- MODO OSCURO ---------- */
+  function toggleModoOscuro() {
+    document.body.classList.toggle('modo-oscuro');
+  }
+
+  /* ---------- FUNCIONES DE MAPA INTERACTIVO ---------- */
+  function centrarEnOrigen() {
+    if (!map || !ultimaCotizacion.coords) return;
+    map.setView([ultimaCotizacion.coords[0][1], ultimaCotizacion.coords[0][0]], 12);
+  }
+
+  function centrarEnDestinos() {
+    if (!map || !ultimaCotizacion.coords) return;
+    const last = ultimaCotizacion.coords.length - 1;
+    map.setView([ultimaCotizacion.coords[last][1], ultimaCotizacion.coords[last][0]], 12);
+  }
+
+  function mostrarDistancias() {
+    if (!ultimaCotizacion.coords || ultimaCotizacion.coords.length < 2) {
+      alert('No hay coordenadas de recorrido disponibles.');
+      return;
+    }
+
+    const distancias = [];
+    for (let i = 0; i < ultimaCotizacion.coords.length - 1; i++) {
+      const from = ultimaCotizacion.coords[i];
+      const to   = ultimaCotizacion.coords[i + 1];
+
+      if (!from || !to || from.length !== 2 || to.length !== 2) {
+        alert(`Coordenada inválida en tramo ${i + 1}`);
+        return;
+      }
+
+      const dist = turf.distance(from, to, { units: 'kilometers' });
+      const puntoA = i === 0 ? 'Inicio' : `Entrega ${i}`;
+      const puntoB = i + 1 === ultimaCotizacion.coords.length - 1
+                     ? `Entrega ${i + 1}`
+                     : `Entrega ${i + 1}`;
+      distancias.push(`${puntoA} → ${puntoB}: ${dist.toFixed(2)} km`);
+    }
+
+    alert("Distancias entre puntos:\n\n" + distancias.join('\n'));
+  }
+
+  /* ---------- MONTO DEL TRANSPORTE ---------- */
+  function actualizarMontoTransporte() {
+    const valor = parseFloat(document.getElementById('inputMontoTransporte').value) || 0;
+    document.getElementById('montoTransporte').textContent = valor.toFixed(2);
+  }
+
+  function mostrarMontoTransporte() {
+    document.getElementById('seccionMontoTransporte').style.display = 'block';
+  }
+
+  /* ---------- INICIO ---------- */
+  cargarHistorial();
+
+  /* ---------- ACTUALIZAR VELOCIDAD, PESO Y VOLUMEN EN PANTALLA ---------- */
+  function actualizarVelocidadVehiculo() {
+    const veh = document.getElementById('vehiculo').value;
+    const velocidad = velocidadesPromedio[veh] || 80;
+    document.getElementById('velocidadTexto').textContent = `${velocidad} km/h`;
+    actualizarPesoVolumenVehiculo();
+  }
+
+  function actualizarPesoVolumenVehiculo() {
+    const veh = document.getElementById('vehiculo').value;
+    const data = pesoYVolumen[veh] || { peso: 0, cbm: 0 };
+    document.getElementById('pesoVehiculoTexto').textContent = `${data.peso.toLocaleString('es-ES')} kg`;
+    document.getElementById('volumenVehiculoTexto').textContent = `${data.cbm.toLocaleString('es-ES')} m³`;
+  }
+
+  /* 🔧 Función para calcular y mostrar % de carga con colores por tramos */
+  let alerta70Mostrada = false;
+  function calcularPorcentajeCarga() {
+    const veh = document.getElementById('vehiculo').value;
+    const data = pesoYVolumen[veh] || { peso: 0, cbm: 0 };
+    const pesoCarga = parseFloat(document.getElementById('pesoCarga').value) || 0;
+    const volCarga  = parseFloat(document.getElementById('volumenCarga').value) || 0;
+
+    const pctPeso = data.peso > 0 ? (pesoCarga / data.peso * 100) : 0;
+    const pctVol  = data.cbm  > 0 ? (volCarga  / data.cbm  * 100) : 0;
+
+    const txtPeso = pesoCarga === 0 ? '–' : `${pctPeso.toFixed(1)} %`;
+    const txtVol  = volCarga  === 0 ? '–' : `${pctVol.toFixed(1)} %`;
+
+    const casilla = document.getElementById('porcentajeCargaTexto');
+    casilla.textContent = `${txtPeso} / ${txtVol}`;
+
+    const maxPct = Math.max(pctPeso, pctVol);
+    casilla.classList.remove('bajo','medio','alto');
+    if (maxPct >= 70)        casilla.classList.add('alto');
+    else if (maxPct >= 60)   casilla.classList.add('medio');
+    else if (maxPct <= 59)   casilla.classList.add('bajo');
+
+    if (maxPct >= 70 && !alerta70Mostrada) {
+      alerta70Mostrada = true;
+      setTimeout(() => {
+        alert('⚠️ Carga elevada: el peso o volumen supera el 70 % de la capacidad del vehículo.\n\nRevisa o considera cambiar de vehículo.');
+      }, 300);
+    } else if (maxPct < 70) {
+      alerta70Mostrada = false;
     }
   }
+
+  /* ---------- VELOCIDAD PERSONALIZADA ---------- */
+  function toggleVelocidadPersonalizada() {
+    const chk = document.getElementById('checkVeloPers');
+    const btn = document.getElementById('btnToggleVelocidad');
+    chk.checked = !chk.checked;
+    document.getElementById('veloPersWrapper').style.display = chk.checked ? 'block' : 'none';
+    btn.textContent = chk.checked ? '🚦 Velocidad manual: ON' : '🚦 Velocidad manual: OFF';
+    btn.style.background = chk.checked ? '#0077cc' : '#ccc';
+    btn.style.color = chk.checked ? '#fff' : '#222';
+    autoRecalcular();
+  }
+
+  function toggleEvitarPeaje() {
+    const chk = document.getElementById('evitarPeajes');
+    const btn = document.getElementById('btnTogglePeaje');
+    chk.checked = !chk.checked;
+    btn.textContent = chk.checked ? '🛣️ Sin peajes: ON' : '🛣️ Sin peajes: OFF';
+    btn.style.background = chk.checked ? '#28a745' : '#6c757d';
+  }
+
+  /* ---------- FUNCIÓN: GRUPO DE VEHÍCULO ---------- */
+  function grupoDeVehiculo(veh) {
+    const grupos = {
+      moto: ['MOTO'],
+      liviano: ['AUTO', 'PANEL', 'PKUP'],
+      pesado: ['CF14', 'CF16', 'CF26', 'CF20', 'CPLT', 'GRBK', 'GALT', 'GPFG'],
+      mula: ['MC24', 'MSXT', 'MS40', 'CB60']
+    };
+    for (const [grupo, lista] of Object.entries(grupos)) {
+      if (lista.includes(veh)) return grupo;
+    }
+    return 'pesado'; // fallback
+  }
+
+  /* ---------- AUTO-REFRESH: solo campos que cambian números ---------- */
+  const autoRefreshCampos = [
+    'pesoCarga',
+    'volumenCarga',
+    'velocidadPersonal',
+    'precioCombustible',
+    'horasExtras',
+    'tiempoCargaDescarga',
+    'peajes',
+    'chkDesayuno',
+    'chkAlmuerzo',
+    'chkCena',
+    'chkHotel',
+    'qtyDesayuno',
+    'qtyAlmuerzo',
+    'qtyCena',
+    'qtyHotel'
+  ];
+
+  autoRefreshCampos.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', autoRecalcular);
+      el.addEventListener('change', autoRecalcular);
+    }
+  });
+
+  // <span style='font-size: 200%; color: #003366; font-weight: bold;'>Tipo de vehículo</span>
+  document.getElementById('vehiculo').addEventListener('change', () => {
+    actualizarVelocidadVehiculo();
+    calcularPorcentajeCarga();
+    autoRecalcular();
+  });
+
+  // Tipo de carga (checkboxes)
+  document.querySelectorAll('input[name="carga"]').forEach(el => {
+    el.addEventListener('change', autoRecalcular);
+  });
+
+  actualizarVelocidadVehiculo();
+  calcularPorcentajeCarga();
 </script>
 </body>
 </html>
